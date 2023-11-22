@@ -69,9 +69,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     //新增员工
     @Override
     public void save(EmployeeDTO employeeDTO) {
-        Employee employee=new Employee();
+        Employee employee = new Employee();
         //对象属性拷贝
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
 
         //设置账号的状态，默认正常,1表示正常
         employee.setStatus(StatusConstant.ENABLE);//常量类，避免写死，方便管理
@@ -94,11 +94,27 @@ public class EmployeeServiceImpl implements EmployeeService {
     //分页查询
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
-       //开始分页查询
-        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        //开始分页查询
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
 
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
         PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
         return pageResult;
+    }
+
+    /*
+     * 启用禁用员工账号
+     * */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        /*Employee employee = new Employee();
+        employee.setStatus(status);
+        employee.setId(id);*/
+
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+        employeeMapper.update(employee);
     }
 }
