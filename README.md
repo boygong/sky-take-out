@@ -190,5 +190,5 @@ postman:  接口测工具，模拟用户发起的各类HTTP请求，获取对应
   | service        | 存放service类    |
   | SkyApplication | 启动类           |
 
-
+### 优化github邮箱设置，以及测试是否能够添加contribution
 
