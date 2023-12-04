@@ -2,13 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.SetmealMapper">
+    <update id="update">
+        update setmeal
+        <set>
+            <if test="categoryId!=null">category_id = #{categoryId},</if>
+            <if test="description!=null">description = #{description},</if>
+            <if test="name!=null">name = #{name},</if>
+            <if test="price!=null">price = #{price},</if>
+            <if test="status!=null">status = #{status},</if>
+            <if test="image!=null">image = #{image},</if>
+            <if test="updateTime!=null">update_time = #{updateTime},</if>
+            <if test="updateUser!=null">update_user = #{updateUser}</if>
+        </set>
+        where id=#{id}
+    </update>
 
     <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
         SELECT s.*,c.name categoryName FROM setmeal s left join category c on s.category_id = c.id
         <where>
-            <if test="categoryId != null">and category_id = #{categoryId}</if>
-            <if test="name != null">and name like concat('%',#{name},'%')</if>
-            <if test="status != null">and status like concat('%',#{status},'%')</if>
+            <if test="categoryId != null">and s.category_id = #{categoryId}</if>
+            <if test="name != null">and s.name like concat('%',#{name},'%')</if>
+            <if test="status != null">and s.status = status</if>
         </where>
         order by create_time desc
     </select>

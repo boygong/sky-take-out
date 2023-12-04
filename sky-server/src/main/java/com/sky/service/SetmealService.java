@@ -2,7 +2,11 @@ package com.sky.service;
 
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Setmeal;
 import com.sky.result.PageResult;
+import com.sky.vo.SetmealVO;
+
+import java.util.List;
 
 /**
  * #author 龚圆康
@@ -15,4 +19,11 @@ public interface SetmealService {
 
     //套餐分页查询
     PageResult getPage(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    //套餐的批量删除
+    void delete(List<Long> ids);
+
+    void updateSetmealWithDish(SetmealDTO setmealDTO);
+
+    SetmealVO getById(Long id);
 }

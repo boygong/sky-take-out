@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.SetmealDish;
 import com.sky.vo.SetmealVO;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -22,4 +23,11 @@ public interface SetmealDishMapper {
 
     void insert(SetmealDish setmealDish);
 
+    //删除套餐菜品关系表中的数据
+    @Delete("delete from setmeal_dish where setmeal_id=#{setmealId} ")
+    void deleteBySetmealId(Long setmealId);
+
+
+    @Select("select * from setmeal_dish where setmeal_id=#{setmealId}")
+    List<SetmealDish> getBySetmealId(Long setmealId);
 }

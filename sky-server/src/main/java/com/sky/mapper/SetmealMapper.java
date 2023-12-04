@@ -6,10 +6,7 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper
@@ -31,4 +28,16 @@ public interface SetmealMapper {
 
 
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    //根据id查询套餐
+    @Select("select * from setmeal where id=#{setmealId}")
+    Setmeal getById(Long setmealId);
+
+
+    //删除套餐表中的数据
+    @Delete("delete from setmeal where id=#{setmealId}")
+    void deleteById(Long setmealId);
+
+    @AutoFill(OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }
