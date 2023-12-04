@@ -37,4 +37,11 @@ public interface DishService {
 
     //根据categoryId查询菜品
     List<Dish> getByCategoryId(String categoryId);
+
+    /**
+     * 菜品起售停售
+     * @param status
+     * @param id
+     */
+    void startOrStop(Integer status, Long id);
 }
