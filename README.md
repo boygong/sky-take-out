@@ -192,3 +192,75 @@ postman:  接口测工具，模拟用户发起的各类HTTP请求，获取对应
 
 ### 优化github邮箱设置，以及测试是否能够添加contribution
 
+<h2>缓存技术
+</h2>
+**redis服务启动命令**
+
+<u>redis-server.exe   redis.window.conf</u>
+
+
+
+**redis在Springboot项目中配置**
+
+spring:
+
+  host: ${sky.redis.host}   //localhost
+  port: ${sky.redis.port} //6379 默认端口
+  password: ${sky.redis.password} //123456
+  database: ${sky.redis.database} //redis中默认有15个数据库，指定编号为1的为默认数据库
+
+**SpringCache中Redis方法几种常用注解**
+
+(1)EnableCaching:如果需要在SpringBoot项目中使用SpringCache的注解方法，需要在启动类上加上@EnableCaching注解
+
+(2)**@CachePut 说明：** 
+
+​	作用: 将方法返回值，放入缓存
+
+​	value: 缓存的名称, 每个缓存名称下面可以有很多key
+
+​	key: 缓存的key  ----------> 支持Spring的表达式语言SPEL语法
+
+<img src="assets\Snipaste_2023-12-13_20-44-33.png" alt="image-20221107094852361"  />
+
+上图中存储到redis数据库中的key的命名规则为uesrCache::100,也可使用result.id来获取user的id值
+
+(3) **@Cacheable 说明:**
+
+​	作用: 在方法执行前，spring先查看缓存中是否有数据，如果有数据，则直接返回缓存数据；若没有数据，调用方法并将方法返回值放到缓存中
+
+​	value: 缓存的名称，每个缓存名称下面可以有多个key
+
+​	key: 缓存的key  ----------> 支持Spring的表达式语言SPEL语法
+
+	/**
+	* Cacheable：在方法执行前spring先查看缓存中是否有数据，如果有数据，则直接返回缓存数据；若没有数据，	  *调用方法并将方法返回值放到缓存中
+	* value：缓存的名称，每个缓存名称下面可以有多个key
+	* key：缓存的key
+	*/
+	@GetMapping
+	@Cacheable(cacheNames = "userCache",key="#id")
+	public User getById(Long id){
+	    User user = userMapper.getById(id);
+	    return user;
+	}
+
+(4)**@CacheEvict 说明：** 
+
+​	作用: 清理指定缓存
+
+​	value: 缓存的名称，每个缓存名称下面可以有多个key
+
+​	key: 缓存的key  ----------> 支持Spring的表达式语言SPEL语法
+
+	@DeleteMapping
+	@CacheEvict(cacheNames = "userCache",key = "#id")//删除某个key对应的缓存数据
+	public void deleteById(Long id){
+	    userMapper.deleteById(id);
+	}
+	
+	@DeleteMapping("/delAll")
+	@CacheEvict(cacheNames = "userCache",allEntries = true)//删除userCache下所有的缓存数据
+	public void deleteAll(){
+	    userMapper.deleteAll();
+	}
