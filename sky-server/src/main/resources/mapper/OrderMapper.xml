@@ -29,5 +29,14 @@
         </set>
         where id = #{id}
     </update>
+    <select id="pageQuery" resultType="com.sky.entity.Orders">
+        select * from orders
+        <where>
+            <if test="userId!=null">and user_id=#{userId}</if>
+            <if test="status!=null">and status=#{status}</if>
+            <if test="phone!=null">and phone=#{phone}</if>
+            <if test="number!=null">and number=#{number}</if>
+        </where>
+    </select>
 
 </mapper>
