@@ -33,4 +33,7 @@ public interface OrderService {
     PageResult pageQuery4User(int page, int pageSize, Integer status);
 
     OrderVO ordersWithDetail(Long id);
+
+    //取消订单
+    void update(Long id);
 }

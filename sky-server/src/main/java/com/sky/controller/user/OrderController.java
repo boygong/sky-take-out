@@ -74,4 +74,10 @@ public class OrderController {
         return Result.success(orderVO);
     }
 
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("取消订单")
+    public Result cancel(@PathVariable Long id){
+        orderService.update(id);
+        return Result.success();
+    }
 }

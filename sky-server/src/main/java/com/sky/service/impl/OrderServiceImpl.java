@@ -53,13 +53,13 @@ public class OrderServiceImpl implements OrderService {
 
 
     /*
-    * 用户下单
-    * */
+     * 用户下单
+     * */
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
         //处理各种业务异常(地址簿为空，购物车为空)
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
-        if (addressBook == null){
+        if (addressBook == null) {
             //用户地址为空,抛出异常
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
@@ -71,14 +71,14 @@ public class OrderServiceImpl implements OrderService {
         shoppingCart.setUserId(userId);
         List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
 
-        if (shoppingCartList==null||shoppingCartList.size()==0){
+        if (shoppingCartList == null || shoppingCartList.size() == 0) {
             //抛出业务异常
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
 
         //2.向订单表插入一条数据
         Orders orders = new Orders();
-        BeanUtils.copyProperties(ordersSubmitDTO,orders);
+        BeanUtils.copyProperties(ordersSubmitDTO, orders);
         orders.setOrderTime(LocalDateTime.now());
         orders.setPayStatus(Orders.UN_PAID);
         orders.setStatus(Orders.PENDING_PAYMENT);
@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setUserId(userId);
 
         //添加地址
-        String address = addressBook.getProvinceName()+addressBook.getCityName()+addressBook.getDistrictName()+addressBook.getDetail();
+        String address = addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail();
         orders.setAddress(address);
 
         orderMapper.insert(orders);
@@ -97,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
         //向订单明细表插入n条数据
         for (ShoppingCart cart : shoppingCartList) {
             OrderDetail orderDetail = new OrderDetail(); //订单明细
-            BeanUtils.copyProperties(cart,orderDetail);
+            BeanUtils.copyProperties(cart, orderDetail);
             orderDetail.setOrderId(orders.getId());//设置当前订单明细关联的订单id
             orderDetailList.add(orderDetail);
         }
@@ -172,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResult pageQuery4User(int pageNum, int pageSize, Integer status) {
         //设置分页
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         ordersPageQueryDTO.setStatus(status);
@@ -182,8 +182,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderVO> list = new ArrayList();
 
         //查询出订单明细，并封装入OrderVO进行响应
-        if (page!=null && page.getTotal()>0){
-            for (Orders orders:page){
+        if (page != null && page.getTotal() > 0) {
+            for (Orders orders : page) {
                 Long orderId = orders.getId();//订单id
                 //查询订单明细
                 List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
@@ -194,7 +194,7 @@ public class OrderServiceImpl implements OrderService {
                 list.add(orderVO);
             }
         }
-        return new PageResult(page.getTotal(),list);
+        return new PageResult(page.getTotal(), list);
     }
 
     //获取订单明细
@@ -203,8 +203,38 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = orderMapper.getById(id);
         List<OrderDetail> details = orderDetailMapper.getByOrderId(id);
         OrderVO orderVO = new OrderVO();
-        BeanUtils.copyProperties(orders,orderVO);
+        BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(details);
         return orderVO;
+    }
+
+    @Override
+    public void update(Long id) {
+        //先查询出订单
+        Orders orders = orderMapper.getById(id);
+        if (orders == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if (orders.getStatus() > 2) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //订单处于待接单的状态下取消，需要进行退款
+        if (orders.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            //由于没有企业微信，无法实现真正的退款服务，进行模拟退款
+            /*weChatPayUtil.refund(
+                    orders.getNumber(),//商户订单号
+                    orders.getNumber(),//商户退款单号
+                    new BigDecimal(0.01),//退款金额
+                    new BigDecimal(0.01)//原订单金额
+            );*/
+            //支付状态改为退款
+            orders.setPayStatus(Orders.REFUND);
+        }
+        // 更新订单状态、取消原因、取消时间
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
     }
 }
