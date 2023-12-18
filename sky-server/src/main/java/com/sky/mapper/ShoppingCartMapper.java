@@ -38,4 +38,11 @@ public interface ShoppingCartMapper {
 
     //动态删除数据
     void delete(ShoppingCart shoppingCart);
+
+    /**
+     * 批量插入购物车数据
+     *
+     * @param shoppingCartList
+     */
+    void insertBatch(List<ShoppingCart> shoppingCartList);
 }

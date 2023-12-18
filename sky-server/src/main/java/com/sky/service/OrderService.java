@@ -36,4 +36,7 @@ public interface OrderService {
 
     //取消订单
     void update(Long id);
+
+    //再来一次订单
+    void again(Long id);
 }
