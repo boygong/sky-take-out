@@ -44,4 +44,12 @@ public class OrderController {
         OrderStatisticsVO orderStatisticsVO = orderService.statistics();
         return Result.success(orderStatisticsVO);
     }
+
+    @GetMapping("/details/{id}")
+    @ApiOperation("查询订单详细")
+    public Result<OrderVO> detail(@PathVariable Long id){
+        log.info("查询订单详细:",id);
+        OrderVO orderVO = orderService.ordersWithDetail(id);
+        return Result.success(orderVO);
+    }
 }
