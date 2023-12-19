@@ -7,9 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.core.util.CollectionUtils;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -282,8 +280,28 @@ public class OrderServiceImpl implements OrderService {
     public OrderStatisticsVO statistics() {
         // 构建包装类
         OrderStatisticsVO orderStatisticsVO = orderMapper.getOrderStatistics();
-        System.out.println(orderStatisticsVO.getConfirmed()+"    "+orderStatisticsVO.getToBeConfirmed()+"    "+orderStatisticsVO.getDeliveryInProgress());
         return orderStatisticsVO;
+    }
+
+    //接受订单
+    @Override
+    public void confirm(Long id) {
+        //先获取到订单数据
+        Orders orders = orderMapper.getById(id);
+        orders.setStatus(Orders.CONFIRMED);
+        orderMapper.update(orders);
+    }
+
+    //拒绝订单
+    @Override
+    public void reject(OrdersRejectionDTO ordersRejectionDTO) {
+        //获取
+        Orders orders = orderMapper.getById(ordersRejectionDTO.getId());
+        //设置拒绝信息
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setPayStatus(Orders.REFUND);
+        orderMapper.update(orders);
     }
 
 

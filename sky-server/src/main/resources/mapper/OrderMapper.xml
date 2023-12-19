@@ -15,6 +15,7 @@
             ,#{estimatedDeliveryTime},#{deliveryStatus},#{deliveryTime},#{packAmount}
             ,#{tablewareNumber},#{tablewareStatus})
     </insert>
+
     <update id="update" parameterType="com.sky.entity.Orders">
         update orders
         <set>
@@ -29,6 +30,7 @@
         </set>
         where id = #{id}
     </update>
+
     <select id="pageQuery" resultType="com.sky.entity.Orders">
         select * from orders
         <where>
