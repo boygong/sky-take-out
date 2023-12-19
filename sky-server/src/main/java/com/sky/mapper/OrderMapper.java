@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import com.sky.vo.OrderStatisticsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -33,6 +34,15 @@ public interface OrderMapper {
 
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
+    //根据id查询订单
     @Select("select * from orders where id=#{id}")
     Orders getById(Long id);
+
+    //获取待接单，待派送，派送中的订单数量直接封装到OrderStatisticsVO中
+    @Select("SELECT " +
+            "SUM(CASE WHEN o.status = 2 THEN 1 ELSE 0 END) as toBeConfirmed, " +
+            "SUM(CASE WHEN o.status = 3 THEN 1 ELSE 0 END) as confirmed, " +
+            "SUM(CASE WHEN o.status = 4 THEN 1 ELSE 0 END) AS deliveryInProgress " +
+            "FROM orders o")
+    OrderStatisticsVO getOrderStatistics();
 }

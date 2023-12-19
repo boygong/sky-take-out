@@ -1,10 +1,12 @@
 package com.sky.service;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.Orders;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 
@@ -39,4 +41,10 @@ public interface OrderService {
 
     //再来一次订单
     void again(Long id);
+
+    //订单搜索
+    PageResult search(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    //各个订单数量统计
+    OrderStatisticsVO statistics();
 }
