@@ -4,8 +4,12 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderStatisticsVO;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * #author 龚圆康
@@ -45,4 +49,10 @@ public interface OrderMapper {
             "SUM(CASE WHEN o.status = 4 THEN 1 ELSE 0 END) AS deliveryInProgress " +
             "FROM orders o")
     OrderStatisticsVO getOrderStatistics();
+
+    /**
+     * 根据订单状态和下单时间查询订单
+    * */
+    @Select("select * from orders where status=#{status} and order_time<#{orderTime}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
 }
