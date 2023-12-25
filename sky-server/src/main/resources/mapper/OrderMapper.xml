@@ -71,4 +71,17 @@
         </where>
     </select>
 
+    <select id="getSalesTop10" resultType="com.sky.dto.GoodsSalesDTO">
+
+        SELECT od.name, SUM(od.number) AS number
+        FROM order_detail od
+        JOIN orders o ON od.order_id = o.id
+        WHERE o.status = 5
+        <if test="begin != null">AND o.order_time &gt; #{begin}</if>
+        <if test="end != null">AND o.order_time &lt; #{end}</if>
+        GROUP BY od.name
+        ORDER BY number DESC
+        LIMIT 0, 10
+    </select>
+
 </mapper>
